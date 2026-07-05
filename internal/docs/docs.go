@@ -15,6 +15,170 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/app/admins": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-管理员"
+                ],
+                "summary": "管理员列表(分页)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页数量",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名模糊筛选",
+                        "name": "username",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态筛选:1启用/0禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/yhdm_service_internal_service.AdminListResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/create-admin": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-管理员"
+                ],
+                "summary": "新增管理员",
+                "parameters": [
+                    {
+                        "description": "管理员信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.createAdminReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {id, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/delete-admin": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-管理员"
+                ],
+                "summary": "删除管理员",
+                "parameters": [
+                    {
+                        "description": "管理员ID",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.deleteAdminReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {success, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/app/get-info": {
             "get": {
                 "security": [
@@ -136,6 +300,95 @@ const docTemplate = `{
                 }
             }
         },
+        "/app/options-admin-role": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-管理员"
+                ],
+                "summary": "角色下拉选项",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/yhdm_service_internal_service.RoleOption"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/update-admin": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-管理员"
+                ],
+                "summary": "更新管理员",
+                "parameters": [
+                    {
+                        "description": "管理员信息(password 为空则不改密码)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.updateAdminReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {success, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/auth/codes": {
             "get": {
                 "security": [
@@ -218,6 +471,57 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_handler_admin.createAdminReq": {
+            "type": "object",
+            "properties": {
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handler_admin.deleteAdminReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_handler_admin.updateAdminReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "yhdm_service_internal_response.Body": {
             "type": "object",
             "properties": {
@@ -227,6 +531,65 @@ const docTemplate = `{
                 "data": {},
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "yhdm_service_internal_service.AdminListItem": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "← created_at 格式化",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_login_ip": {
+                    "description": "← login_ip",
+                    "type": "string"
+                },
+                "last_login_time": {
+                    "description": "← login_at 格式化",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "← real_name",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "← 角色名（role_id=0 为超级管理员）",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "← is_disabled 取反：1 启用 / 0 禁用",
+                    "type": "integer"
+                },
+                "switch_google2fa": {
+                    "description": "← 有 google_code 为 1",
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "yhdm_service_internal_service.AdminListResult": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/yhdm_service_internal_service.AdminListItem"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -257,6 +620,17 @@ const docTemplate = `{
                 "type": {
                     "description": "前端只渲染 type==1 的节点",
                     "type": "integer"
+                }
+            }
+        },
+        "yhdm_service_internal_service.RoleOption": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

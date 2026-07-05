@@ -61,11 +61,12 @@ func main() {
 	jwtMgr := jwtauth.New(cfg.JWT.Secret, cfg.JWT.ExpireSeconds)
 	adminRepo := repository.NewAdminRepository(db)
 	authSvc := service.NewAuthService(adminRepo, jwtMgr, cfg.App.Dev)
+	adminMgmtSvc := service.NewAdminService(adminRepo)
 
 	if !cfg.App.Dev {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	engine := router.New(router.Deps{JWT: jwtMgr, Auth: authSvc})
+	engine := router.New(router.Deps{JWT: jwtMgr, Auth: authSvc, AdminMgmt: adminMgmtSvc})
 
 	zlog.Info("yhdm_service 启动", zap.String("addr", cfg.App.Addr), zap.Bool("dev", cfg.App.Dev))
 	if err := engine.Run(cfg.App.Addr); err != nil {

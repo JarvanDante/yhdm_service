@@ -16,8 +16,9 @@ import (
 
 // Deps 是路由所需的依赖集合。
 type Deps struct {
-	JWT  *jwtauth.Manager
-	Auth *service.AuthService
+	JWT       *jwtauth.Manager
+	Auth      *service.AuthService
+	AdminMgmt *service.AdminService
 }
 
 // New 构建 gin 引擎并注册全部路由。
@@ -48,6 +49,14 @@ func New(deps Deps) *gin.Engine {
 			auth.GET("/app/get-info", authH.GetInfo)
 			auth.GET("/auth/codes", authH.Codes)
 			auth.GET("/app/menus", authH.Menus)
+
+			// 系统管理-管理员
+			adminMgmtH := adminHandler.NewAdminMgmtHandler(deps.AdminMgmt)
+			auth.GET("/app/admins", adminMgmtH.List)
+			auth.GET("/app/options-admin-role", adminMgmtH.RoleOptions)
+			auth.POST("/app/create-admin", adminMgmtH.Create)
+			auth.POST("/app/update-admin", adminMgmtH.Update)
+			auth.POST("/app/delete-admin", adminMgmtH.Delete)
 			// token 刷新：当前 token 仍有效则重签一枚（简化实现，后续可换 refresh token）
 			auth.POST("/auth/refresh", func(c *gin.Context) {
 				newToken, err := deps.JWT.Generate(

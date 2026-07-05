@@ -15,6 +15,39 @@ definitions:
         example: admin
         type: string
     type: object
+  internal_handler_admin.createAdminReq:
+    properties:
+      nickname:
+        type: string
+      password:
+        type: string
+      role:
+        type: integer
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+  internal_handler_admin.deleteAdminReq:
+    properties:
+      id:
+        type: integer
+    type: object
+  internal_handler_admin.updateAdminReq:
+    properties:
+      id:
+        type: integer
+      nickname:
+        type: string
+      password:
+        type: string
+      role_id:
+        type: integer
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
   yhdm_service_internal_response.Body:
     properties:
       code:
@@ -22,6 +55,47 @@ definitions:
       data: {}
       message:
         type: string
+    type: object
+  yhdm_service_internal_service.AdminListItem:
+    properties:
+      created_at:
+        description: ← created_at 格式化
+        type: string
+      id:
+        type: integer
+      last_login_ip:
+        description: ← login_ip
+        type: string
+      last_login_time:
+        description: ← login_at 格式化
+        type: string
+      nickname:
+        description: ← real_name
+        type: string
+      role:
+        description: ← 角色名（role_id=0 为超级管理员）
+        type: string
+      status:
+        description: ← is_disabled 取反：1 启用 / 0 禁用
+        type: integer
+      switch_google2fa:
+        description: ← 有 google_code 为 1
+        type: integer
+      username:
+        type: string
+    type: object
+  yhdm_service_internal_service.AdminListResult:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/yhdm_service_internal_service.AdminListItem'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
     type: object
   yhdm_service_internal_service.MenuItem:
     properties:
@@ -42,6 +116,13 @@ definitions:
       type:
         description: 前端只渲染 type==1 的节点
         type: integer
+    type: object
+  yhdm_service_internal_service.RoleOption:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   yhdm_service_internal_service.UserInfo:
     properties:
@@ -68,6 +149,100 @@ info:
   title: yhdm_service API
   version: "1.0"
 paths:
+  /app/admins:
+    get:
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: size
+        type: integer
+      - description: 用户名模糊筛选
+        in: query
+        name: username
+        type: string
+      - description: 状态筛选:1启用/0禁用
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.AdminListResult'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 管理员列表(分页)
+      tags:
+      - 系统管理-管理员
+  /app/create-admin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 管理员信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.createAdminReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {id, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 新增管理员
+      tags:
+      - 系统管理-管理员
+  /app/delete-admin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 管理员ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.deleteAdminReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {success, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 删除管理员
+      tags:
+      - 系统管理-管理员
   /app/get-info:
     get:
       produces:
@@ -135,6 +310,55 @@ paths:
       summary: 获取当前管理员可见的菜单树
       tags:
       - 认证
+  /app/options-admin-role:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/yhdm_service_internal_service.RoleOption'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 角色下拉选项
+      tags:
+      - 系统管理-管理员
+  /app/update-admin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 管理员信息(password 为空则不改密码)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.updateAdminReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {success, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 更新管理员
+      tags:
+      - 系统管理-管理员
   /auth/codes:
     get:
       description: 超级管理员返回 ["*"]
