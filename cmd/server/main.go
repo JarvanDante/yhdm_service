@@ -9,9 +9,11 @@ import (
 	"go.uber.org/zap"
 
 	"yhdm_service/internal/config"
+	"yhdm_service/internal/crud"
 	"yhdm_service/internal/database"
 	_ "yhdm_service/internal/docs" // swagger 生成的文档（swag init 产出）
 	"yhdm_service/internal/logger"
+	"yhdm_service/internal/model"
 	"yhdm_service/internal/pkg/jwtauth"
 	"yhdm_service/internal/repository"
 	"yhdm_service/internal/router"
@@ -65,10 +67,18 @@ func main() {
 	roleSvc := service.NewRoleService(adminRepo)
 	authoritySvc := service.NewAuthorityService(adminRepo)
 
+	// 文章管理：用通用 crud 基座
+	articleSvc := service.NewArticleService(crud.New[model.Article](db, "article"))
+	articleCategorySvc := service.NewArticleCategoryService(crud.New[model.ArticleCategory](db, "article_category"))
+	blockPositionSvc := service.NewBlockPositionService(crud.New[model.BlockPosition](db, "block_position"))
+
 	if !cfg.App.Dev {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	engine := router.New(router.Deps{JWT: jwtMgr, Auth: authSvc, AdminMgmt: adminMgmtSvc, Role: roleSvc, Authority: authoritySvc})
+	engine := router.New(router.Deps{
+		JWT: jwtMgr, Auth: authSvc, AdminMgmt: adminMgmtSvc, Role: roleSvc, Authority: authoritySvc,
+		Article: articleSvc, ArticleCategory: articleCategorySvc, BlockPosition: blockPositionSvc,
+	})
 
 	zlog.Info("yhdm_service 启动", zap.String("addr", cfg.App.Addr), zap.Bool("dev", cfg.App.Dev))
 	if err := engine.Run(cfg.App.Addr); err != nil {

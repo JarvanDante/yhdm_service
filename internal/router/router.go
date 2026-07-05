@@ -21,6 +21,11 @@ type Deps struct {
 	AdminMgmt *service.AdminService
 	Role      *service.RoleService
 	Authority *service.AuthorityService
+
+	// 文章管理
+	Article         *service.ArticleService
+	ArticleCategory *service.ArticleCategoryService
+	BlockPosition   *service.BlockPositionService
 }
 
 // New 构建 gin 引擎并注册全部路由。
@@ -75,6 +80,19 @@ func New(deps Deps) *gin.Engine {
 			auth.GET("/app/authority-detail", authorityH.Detail)
 			auth.POST("/app/save-authority", authorityH.Save)
 			auth.POST("/app/delete-authority", authorityH.Delete)
+
+			// 文章管理（文章 / 分类 / 模块位置）
+			articleH := adminHandler.NewArticleHandler(deps.Article, deps.ArticleCategory, deps.BlockPosition)
+			auth.GET("/app/articles", articleH.ArticleList)
+			auth.GET("/app/article-detail", articleH.ArticleDetail)
+			auth.POST("/app/save-article", articleH.SaveArticle)
+			auth.POST("/app/delete-article", articleH.DeleteArticle)
+			auth.GET("/app/article-categories", articleH.CategoryList)
+			auth.POST("/app/save-article-category", articleH.SaveCategory)
+			auth.POST("/app/delete-article-category", articleH.DeleteCategory)
+			auth.GET("/app/block-positions", articleH.BlockList)
+			auth.POST("/app/save-block-position", articleH.SaveBlock)
+			auth.POST("/app/delete-block-position", articleH.DeleteBlock)
 			// token 刷新：当前 token 仍有效则重签一枚（简化实现，后续可换 refresh token）
 			auth.POST("/auth/refresh", func(c *gin.Context) {
 				newToken, err := deps.JWT.Generate(

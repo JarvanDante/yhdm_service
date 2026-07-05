@@ -48,6 +48,38 @@ definitions:
       id:
         type: integer
     type: object
+  internal_handler_admin.idReq:
+    properties:
+      id:
+        type: integer
+    type: object
+  internal_handler_admin.saveArticleReq:
+    properties:
+      category_code:
+        type: string
+      click:
+        type: integer
+      content:
+        type: string
+      id:
+        type: integer
+      img:
+        type: string
+      is_recommend:
+        type: integer
+      seo_description:
+        type: string
+      seo_keywords:
+        type: string
+      show_dialog:
+        type: integer
+      sort:
+        type: integer
+      title:
+        type: string
+      url:
+        type: string
+    type: object
   internal_handler_admin.saveAuthorityReq:
     properties:
       class_name:
@@ -59,6 +91,34 @@ definitions:
       key:
         type: string
       link:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: integer
+      sort:
+        type: integer
+    type: object
+  internal_handler_admin.saveBlockReq:
+    properties:
+      code:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      sort:
+        type: integer
+    type: object
+  internal_handler_admin.saveCategoryReq:
+    properties:
+      code:
+        type: string
+      id:
+        type: integer
+      img:
+        type: string
+      language:
         type: string
       name:
         type: string
@@ -97,6 +157,73 @@ definitions:
         type: integer
       name:
         type: string
+    type: object
+  yhdm_service_internal_model.Article:
+    properties:
+      category_code:
+        type: string
+      click:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: integer
+      img:
+        type: string
+      is_recommend:
+        type: integer
+      seo_description:
+        type: string
+      seo_keywords:
+        type: string
+      show_dialog:
+        type: integer
+      sort:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: integer
+      url:
+        type: string
+    type: object
+  yhdm_service_internal_model.ArticleCategory:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: integer
+      img:
+        type: string
+      language:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: integer
+      sort:
+        type: integer
+      updated_at:
+        type: integer
+    type: object
+  yhdm_service_internal_model.BlockPosition:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      sort:
+        type: integer
+      updated_at:
+        type: integer
     type: object
   yhdm_service_internal_response.Body:
     properties:
@@ -147,6 +274,32 @@ definitions:
       total:
         type: integer
     type: object
+  yhdm_service_internal_service.ArticleCategoryListResult:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/yhdm_service_internal_model.ArticleCategory'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  yhdm_service_internal_service.ArticleListResult:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/yhdm_service_internal_model.Article'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   yhdm_service_internal_service.AuthorityListItem:
     properties:
       class_name:
@@ -173,6 +326,19 @@ definitions:
       list:
         items:
           $ref: '#/definitions/yhdm_service_internal_service.AuthorityListItem'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  yhdm_service_internal_service.BlockPositionListResult:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/yhdm_service_internal_model.BlockPosition'
         type: array
       page:
         type: integer
@@ -271,6 +437,94 @@ paths:
       summary: 管理员列表(分页)
       tags:
       - 系统管理-管理员
+  /app/article-categories:
+    get:
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页
+        in: query
+        name: size
+        type: integer
+      - description: 名称模糊
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.ArticleCategoryListResult'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 文章分类列表(分页)
+      tags:
+      - 文章管理
+  /app/article-detail:
+    get:
+      parameters:
+      - description: 文章ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yhdm_service_internal_response.Body'
+      security:
+      - BearerAuth: []
+      summary: 文章详情
+      tags:
+      - 文章管理
+  /app/articles:
+    get:
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页
+        in: query
+        name: size
+        type: integer
+      - description: 标题模糊
+        in: query
+        name: name
+        type: string
+      - description: 分类
+        in: query
+        name: category_code
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.ArticleListResult'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 文章列表(分页)
+      tags:
+      - 文章管理
   /app/authorities:
     get:
       parameters:
@@ -342,6 +596,38 @@ paths:
       summary: 权限资源详情
       tags:
       - 系统管理-权限资源
+  /app/block-positions:
+    get:
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页
+        in: query
+        name: size
+        type: integer
+      - description: 名称模糊
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.BlockPositionListResult'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 模块位置列表(分页)
+      tags:
+      - 文章管理
   /app/create-admin:
     post:
       consumes:
@@ -426,6 +712,52 @@ paths:
       summary: 删除管理员
       tags:
       - 系统管理-管理员
+  /app/delete-article:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 文章ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.idReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yhdm_service_internal_response.Body'
+      security:
+      - BearerAuth: []
+      summary: 删除文章
+      tags:
+      - 文章管理
+  /app/delete-article-category:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 分类ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.idReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yhdm_service_internal_response.Body'
+      security:
+      - BearerAuth: []
+      summary: 删除文章分类
+      tags:
+      - 文章管理
   /app/delete-authority:
     post:
       consumes:
@@ -454,6 +786,29 @@ paths:
       summary: 删除权限资源
       tags:
       - 系统管理-权限资源
+  /app/delete-block-position:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 模块位置ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.idReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yhdm_service_internal_response.Body'
+      security:
+      - BearerAuth: []
+      summary: 删除模块位置
+      tags:
+      - 文章管理
   /app/delete-role:
     post:
       consumes:
@@ -608,6 +963,62 @@ paths:
       summary: 角色列表
       tags:
       - 系统管理-角色
+  /app/save-article:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 文章内容
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.saveArticleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {id, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 新增/更新文章(id>0 为更新)
+      tags:
+      - 文章管理
+  /app/save-article-category:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 分类信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.saveCategoryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {id, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 新增/更新文章分类(id>0 为更新)
+      tags:
+      - 文章管理
   /app/save-authority:
     post:
       consumes:
@@ -636,6 +1047,34 @@ paths:
       summary: 新增/更新权限资源(id>0 为更新)
       tags:
       - 系统管理-权限资源
+  /app/save-block-position:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 模块位置信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.saveBlockReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {id, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 新增/更新模块位置(id>0 为更新)
+      tags:
+      - 文章管理
   /app/save-permission:
     post:
       consumes:

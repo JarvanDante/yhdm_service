@@ -72,9 +72,9 @@
 - ⬜ ActivityLandController：index / list / detail / save / do（activity_land）
 
 ## 文章管理
-- ⬜ ArticleController：list / detail / save（article）
-- ⬜ ArticleCategoryController：list / detail / save（article_category）
-- ⬜ BlockPosController：list / detail / save（block_position）
+- ✅ ArticleController：articles(列表) / article-detail / save-article / delete-article
+- ✅ ArticleCategoryController：article-categories / save-article-category / delete-article-category
+- ✅ BlockPosController：block-positions / save-block-position / delete-block-position
 
 ## 系统设置
 - ⭐ ConfigController：base / other / movie / apk / app / cdn / userTask / center / save（多分组配置）
