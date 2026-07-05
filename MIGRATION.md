@@ -14,7 +14,7 @@
 ## 系统用户（RBAC）
 - ✅ **管理员 admin_user**：admins(列表) / options-admin-role / create / update / delete
 - ✅ **角色 admin_role**：roles / permissions(权限树) / create / update / delete / save-permission
-- ⬜ **权限资源 authority**：list / detail / save（AuthorityController）
+- ✅ **权限资源 authority**：authorities(列表) / authority-detail / save-authority / delete-authority
 - ⬜ admin_user 的 do（启禁/改角色）— 旧 AdminUserController.do
 - ⭐ 2FA：generate-google2fa / bind-google2fa（AdminUserController 相关）
 
