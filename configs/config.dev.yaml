@@ -1,0 +1,20 @@
+# 本地开发覆盖配置。启动加 -conf configs/config.dev.yaml 使用。
+app:
+  dev: true          # 开发模式：登录跳过谷歌 2FA / IP 白名单
+  addr: ":8100"
+
+mongo:
+  uri: "mongodb://127.0.0.1:27017"
+  database: "yhdm"
+
+redis:
+  addr: "127.0.0.1:6379"
+  db: 0
+
+jwt:
+  secret: "dev-secret-do-not-use-in-prod"
+  expireSeconds: 36000
+
+log:
+  level: "debug"
+  format: "console"

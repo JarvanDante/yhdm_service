@@ -1,0 +1,27 @@
+# yhdm_service 配置（生产默认，可用同名 config.dev.yaml 覆盖，或用环境变量 YHDM_ 前缀覆盖）
+app:
+  name: yhdm_service
+  # dev 模式：跳过 IP 白名单和谷歌 2FA 校验（对应旧 PHP 的 isDevEnv()）
+  dev: false
+  addr: ":8100"
+
+# 第一步：Go 直接连旧系统的 MongoDB（与 PHP 共用库，支持双跑灰度）
+mongo:
+  uri: "mongodb://127.0.0.1:27017"
+  database: "yhdm"
+  timeoutMs: 5000
+
+redis:
+  addr: "127.0.0.1:6379"
+  password: ""
+  db: 0
+
+jwt:
+  # 生产务必改成强密钥：openssl rand -base64 32
+  secret: "CHANGE_ME_openssl_rand_base64_32"
+  # token 有效期（秒），对应旧系统 36000
+  expireSeconds: 36000
+
+log:
+  level: "info"   # debug/info/warn/error
+  format: "json"  # json/console

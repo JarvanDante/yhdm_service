@@ -1,0 +1,177 @@
+basePath: /api/backend
+definitions:
+  internal_handler_admin.LoginReq:
+    properties:
+      code:
+        description: Vben 登录组件里的验证码字段名可能是 code，这里一并接住。
+        type: string
+      google_code:
+        example: "123456"
+        type: string
+      password:
+        example: admin123
+        type: string
+      username:
+        example: admin
+        type: string
+    type: object
+  yhdm_service_internal_response.Body:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  yhdm_service_internal_service.MenuItem:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/yhdm_service_internal_service.MenuItem'
+        type: array
+      icon:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      path:
+        type: string
+      sort:
+        type: integer
+      type:
+        description: 前端只渲染 type==1 的节点
+        type: integer
+    type: object
+  yhdm_service_internal_service.UserInfo:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      permissions:
+        items:
+          type: string
+        type: array
+      realName:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 樱花动漫后台服务 API（由 PHP/Phalcon 迁移至 Go/Gin）。
+  title: yhdm_service API
+  version: "1.0"
+paths:
+  /app/get-info:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.UserInfo'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取当前登录管理员信息
+      tags:
+      - 认证
+  /app/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户名+密码(+谷歌验证码)登录，成功返回 JWT。dev 模式跳过 2FA。
+      parameters:
+      - description: 登录参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {token, socket}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 后台管理员登录
+      tags:
+      - 认证
+  /app/menus:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/yhdm_service_internal_service.MenuItem'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取当前管理员可见的菜单树
+      tags:
+      - 认证
+  /auth/codes:
+    get:
+      description: 超级管理员返回 ["*"]
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取当前管理员的权限码(按钮级)
+      tags:
+      - 认证
+  /logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yhdm_service_internal_response.Body'
+      summary: 退出登录
+      tags:
+      - 认证
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
