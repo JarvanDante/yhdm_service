@@ -79,6 +79,127 @@ const docTemplate = `{
                 }
             }
         },
+        "/app/authorities": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-权限资源"
+                ],
+                "summary": "权限资源(菜单节点)列表(分页)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 15,
+                        "description": "每页",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称模糊",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "标识模糊",
+                        "name": "key",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "上级ID",
+                        "name": "parent_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否菜单:1是/0否",
+                        "name": "is_menu",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/yhdm_service_internal_service.AuthorityListResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/authority-detail": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-权限资源"
+                ],
+                "summary": "权限资源详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "权限资源ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/yhdm_service_internal_service.AuthorityListItem"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/app/create-admin": {
             "post": {
                 "security": [
@@ -204,6 +325,56 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/internal_handler_admin.deleteAdminReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {success, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/delete-authority": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-权限资源"
+                ],
+                "summary": "删除权限资源",
+                "parameters": [
+                    {
+                        "description": "权限资源ID",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.deleteAuthorityReq"
                         }
                     }
                 ],
@@ -511,6 +682,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/app/save-authority": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-权限资源"
+                ],
+                "summary": "新增/更新权限资源(id\u003e0 为更新)",
+                "parameters": [
+                    {
+                        "description": "权限资源信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.saveAuthorityReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {id, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/app/save-permission": {
             "post": {
                 "security": [
@@ -779,10 +1000,47 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_handler_admin.deleteAuthorityReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "internal_handler_admin.deleteRoleReq": {
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_handler_admin.saveAuthorityReq": {
+            "type": "object",
+            "properties": {
+                "class_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_menu": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "sort": {
                     "type": "integer"
                 }
             }
@@ -893,6 +1151,58 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/yhdm_service_internal_service.AdminListItem"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "yhdm_service_internal_service.AuthorityListItem": {
+            "type": "object",
+            "properties": {
+                "class_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_menu": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "sort": {
+                    "type": "integer"
+                }
+            }
+        },
+        "yhdm_service_internal_service.AuthorityListResult": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/yhdm_service_internal_service.AuthorityListItem"
                     }
                 },
                 "page": {

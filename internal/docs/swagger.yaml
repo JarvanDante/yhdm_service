@@ -38,9 +38,33 @@ definitions:
       id:
         type: integer
     type: object
+  internal_handler_admin.deleteAuthorityReq:
+    properties:
+      id:
+        type: integer
+    type: object
   internal_handler_admin.deleteRoleReq:
     properties:
       id:
+        type: integer
+    type: object
+  internal_handler_admin.saveAuthorityReq:
+    properties:
+      class_name:
+        type: string
+      id:
+        type: integer
+      is_menu:
+        type: integer
+      key:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: integer
+      sort:
         type: integer
     type: object
   internal_handler_admin.savePermissionReq:
@@ -115,6 +139,40 @@ definitions:
       list:
         items:
           $ref: '#/definitions/yhdm_service_internal_service.AdminListItem'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  yhdm_service_internal_service.AuthorityListItem:
+    properties:
+      class_name:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_menu:
+        type: integer
+      key:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: integer
+      sort:
+        type: integer
+    type: object
+  yhdm_service_internal_service.AuthorityListResult:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/yhdm_service_internal_service.AuthorityListItem'
         type: array
       page:
         type: integer
@@ -213,6 +271,77 @@ paths:
       summary: 管理员列表(分页)
       tags:
       - 系统管理-管理员
+  /app/authorities:
+    get:
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 15
+        description: 每页
+        in: query
+        name: size
+        type: integer
+      - description: 名称模糊
+        in: query
+        name: name
+        type: string
+      - description: 标识模糊
+        in: query
+        name: key
+        type: string
+      - description: 上级ID
+        in: query
+        name: parent_id
+        type: integer
+      - description: 是否菜单:1是/0否
+        in: query
+        name: is_menu
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.AuthorityListResult'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 权限资源(菜单节点)列表(分页)
+      tags:
+      - 系统管理-权限资源
+  /app/authority-detail:
+    get:
+      parameters:
+      - description: 权限资源ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/yhdm_service_internal_service.AuthorityListItem'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 权限资源详情
+      tags:
+      - 系统管理-权限资源
   /app/create-admin:
     post:
       consumes:
@@ -297,6 +426,34 @@ paths:
       summary: 删除管理员
       tags:
       - 系统管理-管理员
+  /app/delete-authority:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 权限资源ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.deleteAuthorityReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {success, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 删除权限资源
+      tags:
+      - 系统管理-权限资源
   /app/delete-role:
     post:
       consumes:
@@ -451,6 +608,34 @@ paths:
       summary: 角色列表
       tags:
       - 系统管理-角色
+  /app/save-authority:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 权限资源信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.saveAuthorityReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {id, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 新增/更新权限资源(id>0 为更新)
+      tags:
+      - 系统管理-权限资源
   /app/save-permission:
     post:
       consumes:

@@ -20,6 +20,7 @@ type Deps struct {
 	Auth      *service.AuthService
 	AdminMgmt *service.AdminService
 	Role      *service.RoleService
+	Authority *service.AuthorityService
 }
 
 // New 构建 gin 引擎并注册全部路由。
@@ -67,6 +68,13 @@ func New(deps Deps) *gin.Engine {
 			auth.POST("/app/update-role", roleH.Update)
 			auth.POST("/app/delete-role", roleH.Delete)
 			auth.POST("/app/save-permission", roleH.SavePermission)
+
+			// 系统管理-权限资源(菜单节点)
+			authorityH := adminHandler.NewAuthorityHandler(deps.Authority)
+			auth.GET("/app/authorities", authorityH.List)
+			auth.GET("/app/authority-detail", authorityH.Detail)
+			auth.POST("/app/save-authority", authorityH.Save)
+			auth.POST("/app/delete-authority", authorityH.Delete)
 			// token 刷新：当前 token 仍有效则重签一枚（简化实现，后续可换 refresh token）
 			auth.POST("/auth/refresh", func(c *gin.Context) {
 				newToken, err := deps.JWT.Generate(
