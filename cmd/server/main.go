@@ -78,6 +78,7 @@ func main() {
 	engine := router.New(router.Deps{
 		JWT: jwtMgr, Auth: authSvc, AdminMgmt: adminMgmtSvc, Role: roleSvc, Authority: authoritySvc,
 		Article: articleSvc, ArticleCategory: articleCategorySvc, BlockPosition: blockPositionSvc,
+		DB: db,
 	})
 
 	zlog.Info("yhdm_service 启动", zap.String("addr", cfg.App.Addr), zap.Bool("dev", cfg.App.Dev))

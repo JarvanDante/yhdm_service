@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	adminHandler "yhdm_service/internal/handler/admin"
 	"yhdm_service/internal/middleware"
@@ -26,6 +27,9 @@ type Deps struct {
 	Article         *service.ArticleService
 	ArticleCategory *service.ArticleCategoryService
 	BlockPosition   *service.BlockPositionService
+
+	// 通用简单模块用（视频/漫画/小说/用户/营销/系统设置/日志的简单 CRUD）
+	DB *mongo.Database
 }
 
 // New 构建 gin 引擎并注册全部路由。
@@ -93,6 +97,11 @@ func New(deps Deps) *gin.Engine {
 			auth.GET("/app/block-positions", articleH.BlockList)
 			auth.POST("/app/save-block-position", articleH.SaveBlock)
 			auth.POST("/app/delete-block-position", articleH.DeleteBlock)
+
+			// 通用简单模块（视频/漫画/小说/用户/营销/系统设置/日志）
+			if deps.DB != nil {
+				adminHandler.RegisterSimpleModules(auth, deps.DB)
+			}
 			// token 刷新：当前 token 仍有效则重签一枚（简化实现，后续可换 refresh token）
 			auth.POST("/auth/refresh", func(c *gin.Context) {
 				newToken, err := deps.JWT.Generate(
