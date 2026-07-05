@@ -28,9 +28,28 @@ definitions:
       username:
         type: string
     type: object
+  internal_handler_admin.createRoleReq:
+    properties:
+      name:
+        type: string
+    type: object
   internal_handler_admin.deleteAdminReq:
     properties:
       id:
+        type: integer
+    type: object
+  internal_handler_admin.deleteRoleReq:
+    properties:
+      id:
+        type: integer
+    type: object
+  internal_handler_admin.savePermissionReq:
+    properties:
+      id:
+        type: integer
+      permission_list:
+        type: string
+      site_id:
         type: integer
     type: object
   internal_handler_admin.updateAdminReq:
@@ -46,6 +65,13 @@ definitions:
       status:
         type: integer
       username:
+        type: string
+    type: object
+  internal_handler_admin.updateRoleReq:
+    properties:
+      id:
+        type: integer
+      name:
         type: string
     type: object
   yhdm_service_internal_response.Body:
@@ -215,6 +241,34 @@ paths:
       summary: 新增管理员
       tags:
       - 系统管理-管理员
+  /app/create-role:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 角色名
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.createRoleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {id, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 新增角色
+      tags:
+      - 系统管理-角色
   /app/delete-admin:
     post:
       consumes:
@@ -243,6 +297,34 @@ paths:
       summary: 删除管理员
       tags:
       - 系统管理-管理员
+  /app/delete-role:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 角色ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.deleteRoleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {success, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 删除角色
+      tags:
+      - 系统管理-角色
   /app/get-info:
     get:
       produces:
@@ -331,6 +413,72 @@ paths:
       summary: 角色下拉选项
       tags:
       - 系统管理-管理员
+  /app/permissions:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {list:[PermissionNode]}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 权限树(用于给角色分配权限)
+      tags:
+      - 系统管理-角色
+  /app/roles:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {list:[RoleListItem]}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 角色列表
+      tags:
+      - 系统管理-角色
+  /app/save-permission:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 角色ID与权限列表(逗号分隔)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.savePermissionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {success, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 保存角色权限
+      tags:
+      - 系统管理-角色
   /app/update-admin:
     post:
       consumes:
@@ -359,6 +507,34 @@ paths:
       summary: 更新管理员
       tags:
       - 系统管理-管理员
+  /app/update-role:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 角色ID与名称
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.updateRoleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {success, message}'
+          schema:
+            allOf:
+            - $ref: '#/definitions/yhdm_service_internal_response.Body'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 更新角色名
+      tags:
+      - 系统管理-角色
   /auth/codes:
     get:
       description: 超级管理员返回 ["*"]

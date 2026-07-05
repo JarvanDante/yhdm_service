@@ -62,11 +62,12 @@ func main() {
 	adminRepo := repository.NewAdminRepository(db)
 	authSvc := service.NewAuthService(adminRepo, jwtMgr, cfg.App.Dev)
 	adminMgmtSvc := service.NewAdminService(adminRepo)
+	roleSvc := service.NewRoleService(adminRepo)
 
 	if !cfg.App.Dev {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	engine := router.New(router.Deps{JWT: jwtMgr, Auth: authSvc, AdminMgmt: adminMgmtSvc})
+	engine := router.New(router.Deps{JWT: jwtMgr, Auth: authSvc, AdminMgmt: adminMgmtSvc, Role: roleSvc})
 
 	zlog.Info("yhdm_service 启动", zap.String("addr", cfg.App.Addr), zap.Bool("dev", cfg.App.Dev))
 	if err := engine.Run(cfg.App.Addr); err != nil {

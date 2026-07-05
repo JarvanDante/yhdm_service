@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"sort"
-	"strings"
 	"time"
 
 	"yhdm_service/internal/model"
@@ -147,7 +146,7 @@ func (s *AuthService) accessCodes(ctx context.Context, u *model.AdminUser) ([]st
 	if role == nil || role.IsDisabled != 0 {
 		return []string{}, "", nil
 	}
-	allowed := splitRights(role.Rights)
+	allowed := role.Rights.Set()
 	codes := make([]string, 0, len(auths))
 	for _, a := range auths {
 		if _, ok := allowed[a.Key]; ok {
@@ -181,7 +180,7 @@ func (s *AuthService) Menus(ctx context.Context, adminID int64) ([]MenuItem, err
 		if role == nil || role.IsDisabled != 0 {
 			return []MenuItem{}, nil
 		}
-		allowed = splitRights(role.Rights)
+		allowed = role.Rights.Set()
 	}
 
 	return buildMenuTree(auths, allowed), nil
@@ -251,13 +250,3 @@ func toMenuItem(a model.Authority) MenuItem {
 	}
 }
 
-func splitRights(rights string) map[string]struct{} {
-	m := make(map[string]struct{})
-	for _, k := range strings.Split(rights, ",") {
-		k = strings.TrimSpace(k)
-		if k != "" {
-			m[k] = struct{}{}
-		}
-	}
-	return m
-}

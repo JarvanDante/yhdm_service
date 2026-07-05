@@ -23,11 +23,11 @@ type AdminUser struct {
 // IsSuperAdmin：role_id 为空(0) 即超级管理员，拥有全部权限。
 func (a *AdminUser) IsSuperAdmin() bool { return a.RoleID == 0 }
 
-// AdminRole 对应集合 admin_role。rights 为逗号分隔的 authority.key 列表。
+// AdminRole 对应集合 admin_role。
 type AdminRole struct {
 	ID          int64  `bson:"_id" json:"id"`
 	Name        string `bson:"name" json:"name"`
-	Rights      string `bson:"rights" json:"rights"`
+	Rights      Rights `bson:"rights" json:"rights"`
 	IsDisabled  int    `bson:"is_disabled" json:"is_disabled"`
 	Description string `bson:"description" json:"description"`
 	CreatedAt   int64  `bson:"created_at" json:"created_at"`

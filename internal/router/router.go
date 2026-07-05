@@ -19,6 +19,7 @@ type Deps struct {
 	JWT       *jwtauth.Manager
 	Auth      *service.AuthService
 	AdminMgmt *service.AdminService
+	Role      *service.RoleService
 }
 
 // New 构建 gin 引擎并注册全部路由。
@@ -57,6 +58,15 @@ func New(deps Deps) *gin.Engine {
 			auth.POST("/app/create-admin", adminMgmtH.Create)
 			auth.POST("/app/update-admin", adminMgmtH.Update)
 			auth.POST("/app/delete-admin", adminMgmtH.Delete)
+
+			// 系统管理-角色
+			roleH := adminHandler.NewRoleHandler(deps.Role)
+			auth.GET("/app/roles", roleH.List)
+			auth.GET("/app/permissions", roleH.Permissions)
+			auth.POST("/app/create-role", roleH.Create)
+			auth.POST("/app/update-role", roleH.Update)
+			auth.POST("/app/delete-role", roleH.Delete)
+			auth.POST("/app/save-permission", roleH.SavePermission)
 			// token 刷新：当前 token 仍有效则重签一枚（简化实现，后续可换 refresh token）
 			auth.POST("/auth/refresh", func(c *gin.Context) {
 				newToken, err := deps.JWT.Generate(

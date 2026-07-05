@@ -49,7 +49,7 @@ func newFixture() *fakeRepo {
 		users:     map[string]*model.AdminUser{"super": super, "editor": editor, "banned": disabled},
 		usersByID: map[int64]*model.AdminUser{1: super, 2: editor, 3: disabled},
 		roles: map[int64]*model.AdminRole{
-			10: {ID: 10, Name: "内容编辑", Rights: "content,content_movie"},
+			10: {ID: 10, Name: "内容编辑", Rights: model.Rights{"content", "content_movie"}},
 		},
 		authorities: []model.Authority{
 			{ID: 100, ParentID: 0, Name: "内容管理", Key: "content", IsMenu: 1, Sort: 1, Link: "/content", ClassName: "video"},

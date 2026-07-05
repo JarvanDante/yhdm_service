@@ -129,6 +129,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/app/create-role": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-角色"
+                ],
+                "summary": "新增角色",
+                "parameters": [
+                    {
+                        "description": "角色名",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.createRoleReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {id, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/app/delete-admin": {
             "post": {
                 "security": [
@@ -154,6 +204,56 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/internal_handler_admin.deleteAdminReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {success, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/delete-role": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-角色"
+                ],
+                "summary": "删除角色",
+                "parameters": [
+                    {
+                        "description": "角色ID",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.deleteRoleReq"
                         }
                     }
                 ],
@@ -339,6 +439,128 @@ const docTemplate = `{
                 }
             }
         },
+        "/app/permissions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-角色"
+                ],
+                "summary": "权限树(用于给角色分配权限)",
+                "responses": {
+                    "200": {
+                        "description": "data: {list:[PermissionNode]}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/roles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-角色"
+                ],
+                "summary": "角色列表",
+                "responses": {
+                    "200": {
+                        "description": "data: {list:[RoleListItem]}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/save-permission": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-角色"
+                ],
+                "summary": "保存角色权限",
+                "parameters": [
+                    {
+                        "description": "角色ID与权限列表(逗号分隔)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.savePermissionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {success, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/app/update-admin": {
             "post": {
                 "security": [
@@ -364,6 +586,56 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/internal_handler_admin.updateAdminReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data: {success, message}",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/yhdm_service_internal_response.Body"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/update-role": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理-角色"
+                ],
+                "summary": "更新角色名",
+                "parameters": [
+                    {
+                        "description": "角色ID与名称",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handler_admin.updateRoleReq"
                         }
                     }
                 ],
@@ -491,10 +763,40 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_handler_admin.createRoleReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_handler_admin.deleteAdminReq": {
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_handler_admin.deleteRoleReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_handler_admin.savePermissionReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "permission_list": {
+                    "type": "string"
+                },
+                "site_id": {
                     "type": "integer"
                 }
             }
@@ -518,6 +820,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handler_admin.updateRoleReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
                     "type": "string"
                 }
             }
